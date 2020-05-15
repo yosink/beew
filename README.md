@@ -1,0 +1,2 @@
+# beew
+beego web init
