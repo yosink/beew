@@ -4,6 +4,7 @@ import (
 	"beew/datasource"
 	"beew/models"
 	"beew/utils"
+	"beew/utils/formater"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
@@ -36,7 +37,23 @@ func (a *ArticleRepo) GetByID(id int) (result models.Article, err error) {
 }
 
 func (a *ArticleRepo) Add(data map[string]interface{}) (bool, error) {
-	err := a.DB.Model(&models.Article{}).Create(data).Error
+	article := models.Article{
+		CategoryID:      data["category_id"].(int64),
+		UserID:          data["user_id"].(int64),
+		Slug:            data["slug"].(string),
+		Title:           data["title"].(string),
+		Subtitle:        data["subtitle"].(string),
+		Content:         data["content"].(string),
+		PageImage:       data["page_image"].(string),
+		MetaDescription: data["meta_description"].(string),
+		Recommend:       data["recommend"].(int8),
+		Sort:            data["sort"].(int),
+		State:           0,
+		ViewCount:       data["view_count"].(int),
+		PublishedAt:     formater.XTime{},
+	}
+
+	err := a.DB.Create(&article).Error
 	if err != nil {
 		return false, err
 	}
@@ -47,6 +64,10 @@ func (a *ArticleRepo) Edit(id int, m map[string]interface{}) (bool, error) {
 	var article models.Article
 	if err := a.DB.Where("id = ?", id).First(&article).Error; gorm.IsRecordNotFoundError(err) {
 		return false, fmt.Errorf("article is not found")
+	}
+	err := a.DB.Model(&models.Article{}).Where("id = ?", id).Updates(m).Error
+	if err != nil {
+		return false, err
 	}
 	return true, nil
 }

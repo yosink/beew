@@ -1,7 +1,6 @@
 package main
 
 import (
-	"beew/filters"
 	_ "beew/routers"
 	"beew/utils/my_logger"
 
@@ -10,6 +9,6 @@ import (
 
 func main() {
 	my_logger.Setup()
-	beego.InsertFilter("/auth", beego.BeforeRouter, filters.JwtAuth)
+	//beego.InsertFilter("/auth", beego.BeforeRouter, filters.JwtAuth)
 	beego.Run()
 }

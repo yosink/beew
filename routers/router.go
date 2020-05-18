@@ -3,7 +3,10 @@ package routers
 import (
 	"beew/controllers"
 	"beew/utils/m_cache"
+	"fmt"
 	"time"
+
+	"github.com/asaskevich/govalidator"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -11,7 +14,10 @@ import (
 
 func init() {
 	beego.Get("/auth", func(c *context.Context) {
-		c.Output.Body([]byte("Auth center"))
+		url := "http://www.baidu.com"
+		res := govalidator.IsURL(url)
+		fmt.Println(res)
+		c.Output.Body([]byte("url checked"))
 	})
 	beego.Get("/test", func(c *context.Context) {
 		cache, _ := m_cache.GetCache("redis")
@@ -21,6 +27,7 @@ func init() {
 	beego.Router("/", &controllers.MainController{})
 	beego.Router("/user", &controllers.UserController{})
 	beego.Router("/article", &controllers.ArticleController{})
+	beego.Router("/article/:id", &controllers.ArticleController{}, "put:Put")
 	//beego.Router("/cate", &controllers.CategoryController{})
 	//ns := beego.NewNamespace("/v1",
 	//	beego.NSInclude(&controllers.CategoryController{}),
@@ -30,5 +37,4 @@ func init() {
 	//)
 	//beego.AddNamespace(ns)
 	//beego.Include(&controllers.CategoryController{})
-	beego.Include(&controllers.TestController{})
 }

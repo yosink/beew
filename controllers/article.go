@@ -6,7 +6,9 @@ import (
 	"beew/utils"
 	"beew/utils/my_logger"
 	"beew/validators"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/astaxie/beego"
 )
@@ -21,6 +23,7 @@ func (c *ArticleController) Prepare() {
 	c.service = services.NewArticleService(repo)
 }
 
+// get list
 func (c *ArticleController) Get() {
 	var (
 		app      = utils.B{C: c.Ctx}
@@ -41,6 +44,7 @@ func (c *ArticleController) Get() {
 	app.JsonResponse(httpCode, errCode, message, data)
 }
 
+// Add article
 func (c *ArticleController) Post() {
 	var (
 		app      = utils.B{C: c.Ctx}
@@ -69,7 +73,7 @@ func (c *ArticleController) Post() {
 				"meta_description": article.MetaDescription,
 				"recommend":        article.Recommend,
 				"sort":             article.Sort,
-				"state":            article.State,
+				"state":            0,
 				"view_count":       article.ViewCount,
 			}
 			_, err := c.service.Add(insertMap)
@@ -86,4 +90,22 @@ func (c *ArticleController) Post() {
 	}
 	app.JsonResponse(httpCode, errCode, message, data)
 
+}
+
+func (c *ArticleController) Put() {
+	var (
+		app  = utils.B{C: c.Ctx}
+		data interface{}
+	)
+	aidStr := c.Ctx.Input.Param(":id")
+	aid, err := strconv.Atoi(aidStr)
+	if err != nil {
+		app.JsonResponse(http.StatusOK, 400, "invalid id", data)
+		return
+	}
+	fmt.Println("aid is :", aid)
+	params := c.Ctx.Input.Data()
+	fmt.Printf("%#v", params)
+	c.Data["json"] = params
+	c.ServeJSON()
 }
