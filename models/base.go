@@ -1,10 +1,13 @@
 package models
 
-import "time"
+import (
+	"beew/utils/formater"
+	"time"
+)
 
 type BaseModel struct {
-	ID        uint `gorm:"primary_key"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time `sql:"index"`
+	ID        uint           `gorm:"primary_key" json:"id"`
+	CreatedAt formater.XTime `json:"created_at"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt *time.Time     `sql:"index" json:"-"`
 }

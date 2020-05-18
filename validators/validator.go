@@ -1,6 +1,8 @@
 package validators
 
 import (
+	"regexp"
+
 	"github.com/asaskevich/govalidator"
 )
 
@@ -12,11 +14,15 @@ func init() {
 		return int >= param
 	})
 
+	govalidator.ParamTagRegexMap["min"] = regexp.MustCompile("^min\\((\\d+)\\)$")
+
 	govalidator.ParamTagMap["max"] = govalidator.ParamValidator(func(str string, params ...string) bool {
 		int, _ := govalidator.ToInt(str)
 		param, _ := govalidator.ToInt(params[0])
 		return int <= param
 	})
+
+	govalidator.ParamTagRegexMap["max"] = regexp.MustCompile("^max\\((\\d+)\\)$")
 }
 
 func BindAndValidate(form interface{}) error {

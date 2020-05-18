@@ -21,4 +21,14 @@ func init() {
 	beego.Router("/", &controllers.MainController{})
 	beego.Router("/user", &controllers.UserController{})
 	beego.Router("/article", &controllers.ArticleController{})
+	//beego.Router("/cate", &controllers.CategoryController{})
+	//ns := beego.NewNamespace("/v1",
+	//	beego.NSInclude(&controllers.CategoryController{}),
+	//	beego.NSGet("/ca", func(c *context.Context) {
+	//		c.Output.Body([]byte("v1 ca"))
+	//	}),
+	//)
+	//beego.AddNamespace(ns)
+	//beego.Include(&controllers.CategoryController{})
+	beego.Include(&controllers.TestController{})
 }
