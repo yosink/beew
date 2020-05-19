@@ -9,6 +9,6 @@ import (
 
 func main() {
 	my_logger.Setup()
-	//beego.InsertFilter("/auth", beego.BeforeRouter, filters.JwtAuth)
+
 	beego.Run()
 }

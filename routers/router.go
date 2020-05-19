@@ -2,12 +2,11 @@ package routers
 
 import (
 	"beew/controllers"
-	"beew/utils/m_cache"
+	"beew/filters"
+	"beew/utils"
 	"fmt"
-	"time"
 
 	"github.com/asaskevich/govalidator"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 )
@@ -20,21 +19,18 @@ func init() {
 		c.Output.Body([]byte("url checked"))
 	})
 	beego.Get("/test", func(c *context.Context) {
-		cache, _ := m_cache.GetCache("redis")
-		cache.Put("bee_cahce", "bee_cache", 5*time.Minute)
-		c.Output.Body([]byte("test"))
+		token, err := utils.GenerateJwtToken(1)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+		c.Output.JSON(token, false, false)
 	})
 	beego.Router("/", &controllers.MainController{})
 	beego.Router("/user", &controllers.UserController{})
 	beego.Router("/article", &controllers.ArticleController{})
 	beego.Router("/article/:id", &controllers.ArticleController{}, "put:Put")
-	//beego.Router("/cate", &controllers.CategoryController{})
-	//ns := beego.NewNamespace("/v1",
-	//	beego.NSInclude(&controllers.CategoryController{}),
-	//	beego.NSGet("/ca", func(c *context.Context) {
-	//		c.Output.Body([]byte("v1 ca"))
-	//	}),
-	//)
-	//beego.AddNamespace(ns)
-	//beego.Include(&controllers.CategoryController{})
+
+	routesForV1()
+
+	beego.InsertFilter("/auth", beego.BeforeRouter, filters.JwtAuth)
 }

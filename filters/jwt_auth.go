@@ -1,36 +1,36 @@
 package filters
 
 import (
+	"beew/repositories"
+	"beew/services"
 	"beew/utils"
+	"net/http"
 	"strings"
 
 	"github.com/astaxie/beego/context"
 )
 
 func JwtAuth(ctx *context.Context) {
+	app := utils.B{
+		C: ctx,
+	}
 	token := GetToken(ctx)
 	if token != "" {
 		claims, err := utils.ParseToken(token)
 		if err != nil {
-			ctx.Output.SetStatus(401)
-			ctx.Output.JSON(map[string]interface{}{
-				"code":    401,
-				"message": "Unauthorized.",
-			}, false, false)
+			app.JsonResponse(http.StatusUnauthorized, 401, "Unauthorized.", nil)
+			return
 		}
-		if claims.Uid != 1 {
-			ctx.Output.SetStatus(401)
-			ctx.Output.JSON(map[string]interface{}{
-				"code":    401,
-				"message": "Unauthorized.",
-			}, false, false)
+		repo := repositories.NewUserRepository()
+		userService := services.NewUserService(repo)
+		exists, err := userService.ExistsByID(claims.Uid)
+		if !exists {
+			app.JsonResponse(http.StatusUnauthorized, 401, "Unauthorized.", nil)
+			return
 		}
 	} else {
-		ctx.Output.SetStatus(401)
-		ctx.Output.JSON(map[string]interface{}{
-			"code":    401,
-			"message": "Unauthorized.",
-		}, false, false)
+		app.JsonResponse(http.StatusUnauthorized, 401, "Unauthorized.", nil)
+		return
 	}
 }
 

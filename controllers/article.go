@@ -6,7 +6,6 @@ import (
 	"beew/utils"
 	"beew/utils/my_logger"
 	"beew/validators"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -98,14 +97,13 @@ func (c *ArticleController) Put() {
 		data interface{}
 	)
 	aidStr := c.Ctx.Input.Param(":id")
-	aid, err := strconv.Atoi(aidStr)
+	_, err := strconv.Atoi(aidStr)
 	if err != nil {
 		app.JsonResponse(http.StatusOK, 400, "invalid id", data)
 		return
 	}
-	fmt.Println("aid is :", aid)
-	params := c.Ctx.Input.Data()
-	fmt.Printf("%#v", params)
-	c.Data["json"] = params
+	var a validators.ArticleAdd
+	c.ParseForm(&a)
+	c.Data["json"] = a
 	c.ServeJSON()
 }
